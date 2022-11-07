@@ -8,6 +8,7 @@
 
 namespace nyeholt {
 
+    use SilverStripe\Control\Session;
     use SilverStripe\Security\Member;
     use SilverStripe\Security\Security;
     use SilverStripe\Core\Injector\Injector;
@@ -48,9 +49,10 @@ namespace nyeholt {
         protected function loginUser($member)
         {
             $request = Injector::inst()->get(HTTPRequest::class);
+            /** @var Session $session */
             $session = $request->getSession();
             $session->regenerateSessionId();
-            $sesssion->set("loggedInAs", $member->ID);
+            $session->set("loggedInAs", $member->ID);
         }
     }
 
