@@ -1,12 +1,10 @@
 ---
 Name: webapiroutes
 ---
-
-Director:
+SilverStripe\Control\Director:
   rules:
-    'jsonservice//$Service/$Method' : WebServiceController
-    'xmlservice//$Service/$Method' : WebServiceController
-    
-Member:
+    'jsonservice//$Service/$Method': 'nyeholt\WebServiceController'
+    'xmlservice//$Service/$Method': 'nyeholt\WebServiceController'
+SilverStripe\Security\Member:
   extensions:
-    - TokenAccessible
+    - nyeholt\TokenAccessible
