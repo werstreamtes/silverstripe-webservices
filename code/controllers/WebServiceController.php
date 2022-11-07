@@ -38,7 +38,7 @@ namespace nyeholt {
 
         private static $dependencies = array(
             'webserviceAuthenticator' => '%$nyeholt\WebserviceAuthenticator',
-            'injector' => '%$Injector',
+            'injector' => '%$SilverStripe\Core\Injector\Injector',
         );
 
         /**

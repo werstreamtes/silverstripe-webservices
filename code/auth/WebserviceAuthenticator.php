@@ -68,7 +68,7 @@ namespace nyeholt {
                 if (!$user) {
                     throw new WebServiceException(403, "Invalid user token");
                 }
-            } else if ($this->allowSecurityId && $userID) {
+            } else if ($this->allowSecurityId && $userId) {
                 // we check the SecurityID parameter for the current user
                 $secParam = SecurityToken::inst()->getName();
                 $securityID = $request->requestVar($secParam);
