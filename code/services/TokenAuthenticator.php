@@ -10,6 +10,8 @@ namespace nyeholt {
 
     use SilverStripe\Security\Member;
     use SilverStripe\Security\Security;
+    use SilverStripe\Core\Injector\Injector;
+    use SilverStripe\Control\HTTPRequest;
 
     class TokenAuthenticator
     {
@@ -45,8 +47,10 @@ namespace nyeholt {
          */
         protected function loginUser($member)
         {
-            /**Security::session_regenerate_id();
-            Session::set("loggedInAs", $member->ID);**/
+            $request = Injector::inst()->get(HTTPRequest::class);
+            $session = $request->getSession();
+            $session->regenerateSessionId();
+            $sesssion->set("loggedInAs", $member->ID);
         }
     }
 
