@@ -57,10 +57,9 @@ namespace nyeholt {
         {
             $token = $this->getToken($request);
 
-            $user = null;
-            $userId = Security::getCurrentUser()->ID;
+            $user = Security::getCurrentUser();
 
-            if ((!$userId && !$this->allowPublicAccess) || $token) {
+            if ((!$user && !$this->allowPublicAccess) || $token) {
                 if (!$token) {
                     throw new WebServiceException(403, "Missing token parameter");
                 }
@@ -68,7 +67,7 @@ namespace nyeholt {
                 if (!$user) {
                     throw new WebServiceException(403, "Invalid user token");
                 }
-            } else if ($this->allowSecurityId && $userId) {
+            } else if ($this->allowSecurityId && $user) {
                 // we check the SecurityID parameter for the current user
                 $secParam = SecurityToken::inst()->getName();
                 $securityID = $request->requestVar($secParam);

@@ -54,6 +54,8 @@ namespace nyeholt {
         public function init()
         {
 
+            $this->baseInitCalled = true;
+
             $this->converters['json'] = array(
                 'DataObject' => new DataObjectJsonConverter(),
                 'DataObjectSet' => new DataObjectSetJsonConverter(),
@@ -81,10 +83,10 @@ namespace nyeholt {
             }
         }
 
-        public function handleRequest(HTTPRequest $request) // @SS4 , DataModel $model
+        public function handleRequest(HTTPRequest $request)
         {
+
             try {
-                $this->pushCurrent();
 
                 $auth = $this->webserviceAuthenticator->authenticate($request);
 
@@ -92,35 +94,23 @@ namespace nyeholt {
                     throw new WebServiceException(403, 'User not found');
                 }
 
-                // borrowed from Controller
                 $this->urlParams = $request->allParams();
-                $this->request = $request;
-                $this->response = new HTTPResponse();
-                //$this->setDataModel($model);
+                $this->beforeHandleRequest($request);
 
-                $this->extend('onBeforeInit');
-
-                $this->init();
-
-                $this->extend('onAfterInit');
-
-                if ($this->response->isFinished()) {
-                    $this->popCurrent();
-                    return $this->response;
+                if (!$this->getResponse()->isFinished()) {
+                    $this->response = parent::handleRequest($request);
+                    $this->prepareResponse($this->response);
                 }
 
-                $response = $this->handleService($request);
+                $this->afterHandleRequest();
+                $this->setResponse($this->handleService($request));
 
-                if (self::has_curr()) {
-                    $this->popCurrent();
+                if ($this->response instanceof HTTPResponse) {
+                    $this->response->addHeader('Content-Type', 'application/' . $this->format);
                 }
 
-                if ($response instanceof HTTPResponse) {
-                    $response->addHeader('Content-Type', 'application/' . $this->format);
-                }
-                // HTTP::add_cache_headers($this->response);
+                return $this->getResponse();
 
-                return $response;
             } catch (WebServiceException $exception) {
                 $this->response = new HTTPResponse();
                 $this->response->setStatusCode($exception->status);
@@ -177,7 +167,7 @@ namespace nyeholt {
                     // @TODO
                 }
 
-                if (!Security::getCurrentUser()->ID) {
+                if (!Security::getCurrentUser()) {
                     // require service to explicitly state that the method is allowed
                     if (method_exists($svc, 'publicWebMethods')) {
                         $publicMethods = $svc->publicWebMethods();
