@@ -107,6 +107,7 @@ namespace nyeholt {
 
                 if ($this->response instanceof HTTPResponse) {
                     $this->response->addHeader('Content-Type', 'application/' . $this->format);
+                    $this->response->setStatusCode(200);
                 }
 
                 return $this->getResponse();
