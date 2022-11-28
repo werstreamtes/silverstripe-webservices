@@ -88,6 +88,8 @@ namespace nyeholt {
 
             try {
 
+                $this->beforeHandleRequest($request);
+
                 $auth = $this->webserviceAuthenticator->authenticate($request);
 
                 if (!$auth) {
@@ -95,15 +97,17 @@ namespace nyeholt {
                 }
 
                 $this->urlParams = $request->allParams();
-                $this->beforeHandleRequest($request);
 
-                if (!$this->getResponse()->isFinished()) {
-                    $this->response = parent::handleRequest($request);
-                    $this->prepareResponse($this->response);
+                if ($this->getResponse()->isFinished()) {
+                    $this->afterHandleRequest();
+                    return $this->getResponse();
                 }
 
-                $this->afterHandleRequest();
-                $this->setResponse($this->handleService($request));
+                $response = $this->handleService($request);
+                $this->prepareResponse($response);
+                if (self::has_curr()) {
+                    $this->afterHandleRequest();
+                }
 
                 if ($this->response instanceof HTTPResponse) {
                     $this->response->addHeader('Content-Type', 'application/' . $this->format);
