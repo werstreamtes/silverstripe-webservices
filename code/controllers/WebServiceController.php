@@ -194,7 +194,9 @@ namespace nyeholt {
                     $params = array();
 
                     foreach ($refParams as $refParm) {
-                        $paramClass = $refParm->getClass();
+                        $paramClass = $refParm->getType() && !$refParm->getType()->isBuiltin()
+                            ? new \ReflectionClass($refParm->getType()->getName())
+                            : null;
                         // if we're after a dataobject, we'll try and find one using
                         // this name with ID and Type parameters
                         if ($paramClass && ($paramClass->getName() == 'DataObject' || $paramClass->isSubclassOf('DataObject'))) {
