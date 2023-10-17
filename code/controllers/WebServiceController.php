@@ -371,7 +371,7 @@ namespace nyeholt {
     {
         public $status;
 
-        public function __construct($status = 403, $message = '', $code = null, $previous = null)
+        public function __construct($status = 403, $message = '', $code = 0, $previous = null)
         {
             $this->status = $status;
             parent::__construct($message, $code, $previous);
