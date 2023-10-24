@@ -359,10 +359,10 @@ namespace nyeholt {
 
         protected function ajaxResponse($message, $status)
         {
-            return Convert::raw2json(array(
+            return json_encode(array(
                 'message' => $message,
                 'status' => $status,
-            ));
+            ), 0);
         }
 
     }
@@ -382,7 +382,7 @@ namespace nyeholt {
     {
         public function convert($value)
         {
-            return Convert::raw2json($value);
+            return json_encode($value, 0);
         }
     }
 
