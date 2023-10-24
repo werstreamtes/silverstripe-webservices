@@ -83,7 +83,7 @@ namespace nyeholt {
             }
         }
 
-        public function handleRequest(HTTPRequest $request): SilverStripe\Control\HTTPResponse 
+        public function handleRequest(HTTPRequest $request): HTTPResponse 
         {
 
             try {
