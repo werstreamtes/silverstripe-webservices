@@ -17,9 +17,9 @@ namespace nyeholt {
         public function convert(DataObject $object)
         {
             if ($object->hasMethod('toFilteredMap')) {
-                return Convert::raw2json($object->toFilteredMap());
+                return json_encode($object->toFilteredMap(), 0);
             }
-            return Convert::raw2json($object->toMap());
+            return json_encode($object->toMap(), 0);
         }
         
     }

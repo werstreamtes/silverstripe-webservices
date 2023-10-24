@@ -28,7 +28,7 @@ namespace nyeholt {
                 }
             }
 
-            return Convert::raw2json($ret);
+            return json_encode($ret, true);
         }
 
     }
