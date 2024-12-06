@@ -99,6 +99,7 @@ namespace nyeholt {
                 $this->urlParams = $request->allParams();
 
                 if ($this->getResponse()->isFinished()) {
+                    $this->enableCors();
                     $this->afterHandleRequest();
                     return $this->getResponse();
                 }
@@ -114,6 +115,7 @@ namespace nyeholt {
                     $this->response->setStatusCode(200);
                 }
 
+                $this->enableCors();
                 return $this->getResponse();
 
             } catch (WebServiceException $exception) {
@@ -135,6 +137,7 @@ namespace nyeholt {
                 $this->response->setBody($this->ajaxResponse($exception->getMessage(), $code));
             }
 
+            $this->enableCors();
             return $this->response;
         }
 
@@ -185,7 +188,7 @@ namespace nyeholt {
                 }
 
                 $refObj = new ReflectionObject($svc);
-                $refMeth = $refObj->getMethod($method);
+                $refMeth = $refObj->getMethod($method ?? '');
                 if ($refMeth) {
 
                     $allArgs = $this->getRequestArgs($requestType);
@@ -365,6 +368,14 @@ namespace nyeholt {
             ), 0);
         }
 
+        protected function enableCors() : void
+        {
+            if ($this->response && $this->response instanceof HTTPResponse) {
+                $this->response->addHeader('Access-Control-Allow-Origin', '*');
+                $this->response->addHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+                $this->response->addHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+            }
+        }
     }
 
     class WebServiceException extends Exception
