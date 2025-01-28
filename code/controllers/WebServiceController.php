@@ -160,8 +160,8 @@ namespace nyeholt {
             $response = '';
 
             if ($svc && ($svc instanceof WebServiceable || method_exists($svc, 'webEnabledMethods'))) {
-                // always allow the 'options' method
-                if ($method == 'options') {
+                // always allow the 'OPTIONS' requests
+                if ($requestType == 'OPTIONS') {
                     $this->response->setStatusCode(200);
                     return $this->response;
                 }
