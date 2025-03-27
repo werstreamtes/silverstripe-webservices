@@ -378,7 +378,7 @@ namespace nyeholt {
         {
             if ($this->response && $this->response instanceof HTTPResponse) {
                 $this->response->addHeader('Access-Control-Allow-Origin', '*');
-                $this->response->addHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+                $this->response->addHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, AppVersion, AppBuild');
                 $this->response->addHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
             }
         }
