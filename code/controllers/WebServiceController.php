@@ -57,25 +57,25 @@ namespace nyeholt {
             $this->baseInitCalled = true;
 
             $this->converters['json'] = array(
-                'DataObject' => new DataObjectJsonConverter(),
-                'DataObjectSet' => new DataObjectSetJsonConverter(),
-                'DataList' => new DataObjectSetJsonConverter(),
-                'ArrayList' => new DataObjectSetJsonConverter(),
-                'Array' => new ArrayJsonConverter(),
-                'ScalarItem' => new ScalarJsonConverter(),
-                'stdClass' => new ScalarJsonConverter(),
-                'FinalConverter' => new FinalJsonConverter()
+                'dataobject' => new DataObjectJsonConverter(),
+                'dataobjectset' => new DataObjectSetJsonConverter(),
+                'datalist' => new DataObjectSetJsonConverter(),
+                'arraylist' => new DataObjectSetJsonConverter(),
+                'array' => new ArrayJsonConverter(),
+                'scalaritem' => new ScalarJsonConverter(),
+                'stdclass' => new ScalarJsonConverter(),
+                'finalconverter' => new FinalJsonConverter()
             );
 
             $this->converters['xml'] = array(
-                'DataObject' => new DataObjectXmlConverter(),
-                'DataObjectSet' => new DataObjectSetXmlConverter(),
-                'DataList' => new DataObjectSetXmlConverter(),
-                'ArrayList' => new DataObjectSetXmlConverter(),
-                'Array' => new ArrayXmlConverter(),
-                'ScalarItem' => new ScalarXmlConverter(),
-                'stdClass' => new ScalarXmlConverter(),
-                'FinalConverter' => new FinalXmlConverter()
+                'dataobject' => new DataObjectXmlConverter(),
+                'dataobjectset' => new DataObjectSetXmlConverter(),
+                'datalist' => new DataObjectSetXmlConverter(),
+                'arraylist' => new DataObjectSetXmlConverter(),
+                'array' => new ArrayXmlConverter(),
+                'scalaritem' => new ScalarXmlConverter(),
+                'stdclass' => new ScalarXmlConverter(),
+                'finalconverter' => new FinalXmlConverter()
             );
 
             if (strpos($this->request->getURL(), 'xmlservice') === 0) {
@@ -99,6 +99,7 @@ namespace nyeholt {
                 $this->urlParams = $request->allParams();
 
                 if ($this->getResponse()->isFinished()) {
+                    $this->enableCors();
                     $this->afterHandleRequest();
                     return $this->getResponse();
                 }
@@ -114,6 +115,7 @@ namespace nyeholt {
                     $this->response->setStatusCode(200);
                 }
 
+                $this->enableCors();
                 return $this->getResponse();
 
             } catch (WebServiceException $exception) {
@@ -135,6 +137,7 @@ namespace nyeholt {
                 $this->response->setBody($this->ajaxResponse($exception->getMessage(), $code));
             }
 
+            $this->enableCors();
             return $this->response;
         }
 
@@ -157,6 +160,12 @@ namespace nyeholt {
             $response = '';
 
             if ($svc && ($svc instanceof WebServiceable || method_exists($svc, 'webEnabledMethods'))) {
+                // always allow the 'OPTIONS' requests
+                if ($requestType == 'OPTIONS') {
+                    $this->response->setStatusCode(200);
+                    return $this->response;
+                }
+
                 $allowedMethods = array();
                 if (method_exists($svc, 'webEnabledMethods')) {
                     $allowedMethods = $svc->webEnabledMethods();
@@ -185,7 +194,7 @@ namespace nyeholt {
                 }
 
                 $refObj = new ReflectionObject($svc);
-                $refMeth = $refObj->getMethod($method);
+                $refMeth = $refObj->getMethod($method ?? '');
                 if ($refMeth) {
 
                     $allArgs = $this->getRequestArgs($requestType);
@@ -235,7 +244,7 @@ namespace nyeholt {
 
                     $responseItem = $this->convertResponse($return);
 
-                    $response = $this->converters[$this->format]['FinalConverter']->convert($responseItem);
+                    $response = $this->converters[$this->format]['finalconverter']->convert($responseItem);
                 }
             }
 
@@ -323,11 +332,11 @@ namespace nyeholt {
         public function convertResponse($return)
         {
             if (is_object($return)) {
-                $cls = get_class($return);
+                $cls = strtolower(get_class($return));
             } else if (is_array($return)) {
-                $cls = 'Array';
+                $cls = 'array';
             } else {
-                $cls = 'ScalarItem';
+                $cls = 'scalaritem';
             }
 
             if (isset($this->converters[$this->format][$cls])) {
@@ -365,6 +374,14 @@ namespace nyeholt {
             ), 0);
         }
 
+        protected function enableCors() : void
+        {
+            if ($this->response && $this->response instanceof HTTPResponse) {
+                $this->response->addHeader('Access-Control-Allow-Origin', '*');
+                $this->response->addHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+                $this->response->addHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+            }
+        }
     }
 
     class WebServiceException extends Exception
