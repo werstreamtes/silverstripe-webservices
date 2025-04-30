@@ -57,25 +57,25 @@ namespace nyeholt {
             $this->baseInitCalled = true;
 
             $this->converters['json'] = array(
-                'DataObject' => new DataObjectJsonConverter(),
-                'DataObjectSet' => new DataObjectSetJsonConverter(),
-                'DataList' => new DataObjectSetJsonConverter(),
-                'ArrayList' => new DataObjectSetJsonConverter(),
-                'Array' => new ArrayJsonConverter(),
-                'ScalarItem' => new ScalarJsonConverter(),
-                'stdClass' => new ScalarJsonConverter(),
-                'FinalConverter' => new FinalJsonConverter()
+                'dataobject' => new DataObjectJsonConverter(),
+                'dataobjectset' => new DataObjectSetJsonConverter(),
+                'datalist' => new DataObjectSetJsonConverter(),
+                'arraylist' => new DataObjectSetJsonConverter(),
+                'array' => new ArrayJsonConverter(),
+                'scalaritem' => new ScalarJsonConverter(),
+                'stdclass' => new ScalarJsonConverter(),
+                'finalconverter' => new FinalJsonConverter()
             );
 
             $this->converters['xml'] = array(
-                'DataObject' => new DataObjectXmlConverter(),
-                'DataObjectSet' => new DataObjectSetXmlConverter(),
-                'DataList' => new DataObjectSetXmlConverter(),
-                'ArrayList' => new DataObjectSetXmlConverter(),
-                'Array' => new ArrayXmlConverter(),
-                'ScalarItem' => new ScalarXmlConverter(),
-                'stdClass' => new ScalarXmlConverter(),
-                'FinalConverter' => new FinalXmlConverter()
+                'dataobject' => new DataObjectXmlConverter(),
+                'dataobjectset' => new DataObjectSetXmlConverter(),
+                'datalist' => new DataObjectSetXmlConverter(),
+                'arraylist' => new DataObjectSetXmlConverter(),
+                'array' => new ArrayXmlConverter(),
+                'scalaritem' => new ScalarXmlConverter(),
+                'stdclass' => new ScalarXmlConverter(),
+                'finalconverter' => new FinalXmlConverter()
             );
 
             if (strpos($this->request->getURL(), 'xmlservice') === 0) {
@@ -244,7 +244,7 @@ namespace nyeholt {
 
                     $responseItem = $this->convertResponse($return);
 
-                    $response = $this->converters[$this->format]['FinalConverter']->convert($responseItem);
+                    $response = $this->converters[$this->format]['finalconverter']->convert($responseItem);
                 }
             }
 
@@ -332,11 +332,11 @@ namespace nyeholt {
         public function convertResponse($return)
         {
             if (is_object($return)) {
-                $cls = get_class($return);
+                $cls = strtolower(get_class($return));
             } else if (is_array($return)) {
-                $cls = 'Array';
+                $cls = 'array';
             } else {
-                $cls = 'ScalarItem';
+                $cls = 'scalaritem';
             }
 
             if (isset($this->converters[$this->format][$cls])) {
