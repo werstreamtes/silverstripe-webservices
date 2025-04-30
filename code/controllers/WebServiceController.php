@@ -162,7 +162,7 @@ namespace nyeholt {
             if ($svc && ($svc instanceof WebServiceable || method_exists($svc, 'webEnabledMethods'))) {
                 // always allow the 'OPTIONS' requests
                 if ($requestType == 'OPTIONS') {
-                    $this->response->setStatusCode(200);
+                    $this->response->setStatusCode(204);
                     return $this->response;
                 }
 
@@ -380,6 +380,9 @@ namespace nyeholt {
                 $this->response->addHeader('Access-Control-Allow-Origin', '*');
                 $this->response->addHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, AppVersion, AppBuild');
                 $this->response->addHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+                // Allow preflight requests to be cached for 1 day, Chromium > v76 caps at 2 hours.
+                // see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Access-Control-Max-Age#directives
+                $this->response->addHeader('Access-Control-Max-Age', '86400');
             }
         }
     }
