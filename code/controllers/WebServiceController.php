@@ -272,7 +272,7 @@ namespace nyeholt {
 
             if (strpos($contentType, 'application/json') !== false && !count($allArgs) && strlen($this->request->getBody())) {
                 // decode the body to a params array
-                $bodyParams = Convert::json2array($this->request->getBody());
+                $bodyParams = json_decode($this->request->getBody(), true);
                 if (isset($bodyParams['params'])) {
                     $allArgs = $bodyParams['params'];
                 } else {
